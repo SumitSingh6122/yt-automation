@@ -1,7 +1,6 @@
 import { google } from 'googleapis';
 import { CONFIG } from './config';
 import fs from 'fs';
-import path from 'path';
 
 export async function getLatestVideoId(channelId: string): Promise<string | null> {
   const youtube = google.youtube('v3');
@@ -61,17 +60,14 @@ export async function getLatestVideoId(channelId: string): Promise<string | null
 }
 
 export function getAuthenticatedYoutube(accessToken: string) {
-  const clientSecretPath = path.join(process.cwd(), CONFIG.CLIENT_SECRET_PATH);
-  const clientSecret = JSON.parse(fs.readFileSync(clientSecretPath, 'utf8'));
-  const { client_id, client_secret, redirect_uris } = clientSecret.installed || clientSecret.web;
-  
-  const redirectUri = process.env.REDIRECT_URI || 
-    (redirect_uris && redirect_uris[0] ? redirect_uris[0] : 'http://localhost:3000/api/auth/callback');
+  if (!CONFIG.CLIENT_ID || !CONFIG.CLIENT_SECRET) {
+    throw new Error('Missing Google OAuth credentials. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in .env.local');
+  }
 
   const oauth2Client = new google.auth.OAuth2(
-    client_id,
-    client_secret,
-    redirectUri
+    CONFIG.CLIENT_ID,
+    CONFIG.CLIENT_SECRET,
+    CONFIG.REDIRECT_URI
   );
 
   oauth2Client.setCredentials({ access_token: accessToken });

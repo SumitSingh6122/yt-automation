@@ -1,22 +1,15 @@
 import { google } from 'googleapis';
 import { CONFIG } from './config';
-import fs from 'fs';
-import path from 'path';
 
 export function getOAuth2Client() {
-  const clientSecretPath = path.join(process.cwd(), CONFIG.CLIENT_SECRET_PATH);
-  const clientSecret = JSON.parse(fs.readFileSync(clientSecretPath, 'utf8'));
-
-  const { client_id, client_secret, redirect_uris } = clientSecret.installed || clientSecret.web;
-  
-  // Use the redirect URI from config or default to localhost:3000
-  const redirectUri = process.env.REDIRECT_URI || 
-    (redirect_uris && redirect_uris[0] ? redirect_uris[0] : 'http://localhost:3000/api/auth/callback');
+  if (!CONFIG.CLIENT_ID || !CONFIG.CLIENT_SECRET) {
+    throw new Error('Missing Google OAuth credentials. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in .env.local');
+  }
 
   return new google.auth.OAuth2(
-    client_id,
-    client_secret,
-    redirectUri
+    CONFIG.CLIENT_ID,
+    CONFIG.CLIENT_SECRET,
+    CONFIG.REDIRECT_URI
   );
 }
 

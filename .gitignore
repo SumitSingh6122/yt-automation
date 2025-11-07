@@ -42,3 +42,7 @@ next-env.d.ts
 token.json
 last_video.json
 
+# environment variables
+.env.local
+.env*.local
+
