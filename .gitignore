@@ -37,7 +37,8 @@ yarn-error.log*
 next-env.d.ts
 
 # downloads and tokens
-
+/downloads/*
+!/downloads/.gitkeep
 token.json
 last_video.json
 
