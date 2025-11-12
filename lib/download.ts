@@ -3,7 +3,14 @@ import fs from "fs";
 import path from "path";
 
 export async function downloadVideo(videoId: string): Promise<string> {
-  const downloadDir = path.join(process.cwd(), "downloads");
+
+  const downloadDir =
+    process.env.NODE_ENV === "production"
+      ? "/tmp/downloads" // ✅ only writable folder in Vercel/AWS
+      : path.join(process.cwd(), "downloads"); // ✅ works locally
+
+  
+
   if (!fs.existsSync(downloadDir)) fs.mkdirSync(downloadDir, { recursive: true });
 
   const filePath = path.join(downloadDir, `${videoId}.mp4`);
